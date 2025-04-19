@@ -233,7 +233,7 @@ buses = {
     ],
 
     5: [
-        # Einzige Hin-Fahrt (Wesel → Oberhausen Hbf)
+        # single forward trip (Wesel → Oberhausen Hbf)
         {"stops": [
             {"station": "Wesel", "time": time_to_min("14:23")},
             {"station": "Friedrichsfeld (alt)", "time": time_to_min("14:36")},  # +13 min
@@ -246,7 +246,7 @@ buses = {
             {"station": "Oberhausen Hbf (RIM)", "time": time_to_min("15:46")}   # +15 min
         ]},
 
-        # Einzige Rückfahrt (Oberhausen Hbf → Wesel)
+        # single return trip (Oberhausen Hbf → Wesel)
         {"stops": [
             {"station": "Oberhausen Hbf (RIM)", "time": time_to_min("16:20")},
             {"station": "OB-Sterkrade", "time": time_to_min("16:34")},          # +14 min
@@ -293,7 +293,7 @@ buses = {
             {"station": "Duisburg Hbf", "time": time_to_min("06:00")}
         ]},
         {"stops": [
-            {"station": "Dinslaken", "time": time_to_min("06:50")},  # Fahrtnummer 8049006
+            {"station": "Dinslaken", "time": time_to_min("06:50")},  # 8049006
             {"station": "Duisburg Hbf", "time": time_to_min("07:20")}
         ]},
         {"stops": [
@@ -363,7 +363,7 @@ buses = {
     83: [
         # Dinslaken → Duisburg Hbf (Mo-Fr)
         {"stops": [
-            {"station": "Dinslaken", "time": time_to_min("05:50")},  # Fahrt 8049052
+            {"station": "Dinslaken", "time": time_to_min("05:50")},  # 8049052
             {"station": "Duisburg Hbf", "time": time_to_min("06:20")}  # +30 min
         ]},
         {"stops": [
@@ -455,7 +455,7 @@ buses = {
     ],
 
     84: [
-        # Dinslaken → Duisburg Hbf (Hinfahrten)
+        # Dinslaken → Duisburg Hbf (forward trips)
         {"stops": [{"station": "Dinslaken", "time": time_to_min("06:10")}, {"station": "Duisburg Hbf", "time": time_to_min("06:40")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("07:30")}, {"station": "Duisburg Hbf", "time": time_to_min("08:00")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("09:10")}, {"station": "Duisburg Hbf", "time": time_to_min("09:40")}]},
@@ -468,7 +468,7 @@ buses = {
         {"stops": [{"station": "Dinslaken", "time": time_to_min("19:30")}, {"station": "Duisburg Hbf", "time": time_to_min("20:00")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("21:00")}, {"station": "Duisburg Hbf", "time": time_to_min("21:30")}]},
 
-        # Duisburg Hbf → Dinslaken (Rückfahrten)
+        # Duisburg Hbf → Dinslaken (return trips)
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("06:45")}, {"station": "Dinslaken", "time": time_to_min("07:15")}]},
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("07:45")}, {"station": "Dinslaken", "time": time_to_min("08:15")}]},
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("09:25")}, {"station": "Dinslaken", "time": time_to_min("09:55")}]},
@@ -483,7 +483,7 @@ buses = {
     ],
 
     85: [
-        # Hinfahrten (Dinslaken → Duisburg Hbf)
+        # forward trips (Dinslaken → Duisburg Hbf)
         {"stops": [{"station": "Dinslaken", "time": time_to_min("07:50")}, {"station": "Duisburg Hbf", "time": time_to_min("08:20")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("09:30")}, {"station": "Duisburg Hbf", "time": time_to_min("10:00")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("11:10")}, {"station": "Duisburg Hbf", "time": time_to_min("11:40")}]},
@@ -492,7 +492,7 @@ buses = {
         {"stops": [{"station": "Dinslaken", "time": time_to_min("16:10")}, {"station": "Duisburg Hbf", "time": time_to_min("16:40")}]},
         {"stops": [{"station": "Dinslaken", "time": time_to_min("17:50")}, {"station": "Duisburg Hbf", "time": time_to_min("18:20")}]},
 
-        # Rückfahrten (Duisburg Hbf → Dinslaken)
+        # return trips (Duisburg Hbf → Dinslaken)
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("07:05")}, {"station": "Dinslaken", "time": time_to_min("07:35")}]},
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("08:45")}, {"station": "Dinslaken", "time": time_to_min("09:15")}]},
         {"stops": [{"station": "Duisburg Hbf", "time": time_to_min("10:25")}, {"station": "Dinslaken", "time": time_to_min("10:55")}]},
@@ -527,6 +527,7 @@ def find_optimal_schedule(start_time, start_location, buses):
     while heap:
         current_time, _, state = heapq.heappop(heap)
         
+        # check if the current state is better than the best found so far
         if best and current_time >= best.current_time:
             continue
 
@@ -535,22 +536,21 @@ def find_optimal_schedule(start_time, start_location, buses):
             continue
         visited[key] = current_time
 
-        if len(state.checked) == len(buses):
+        # check if we have visited all buses and are at the start location
+        if len(state.checked) == len(buses) and state.location == start_location:
             if not best or current_time < best.current_time:
                 best = state
             continue
 
-        # Busfahrten hinzufügen
+        # add all buses that can be taken from the current location
         for bus_id, trips in buses.items():
-            if bus_id in state.checked:
-                continue
             for trip in trips:
                 for i in range(len(trip["stops"]) - 1):
                     stop = trip["stops"][i]
                     next_stop = trip["stops"][i + 1]
                     if stop["station"] == state.location and stop["time"] >= current_time:
                         new_checked = set(state.checked)
-                        new_checked.add(bus_id)
+                        new_checked.add(bus_id)  # add the bus to the checked set, even if it's already done
                         new_state = State(
                             next_stop["time"],
                             next_stop["station"],
@@ -566,13 +566,11 @@ def find_optimal_schedule(start_time, start_location, buses):
                         heapq.heappush(heap, (new_state.current_time, counter, new_state))
                         counter += 1
 
-        # Umstieg an der gleichen Haltestelle mit Wartezeit
-        if len(state.path) < 5:
-            new_location = state.location  # Haltestelle bleibt gleich
-            transfer_time = 0  # Realistische Wartezeit von 15 Minuten
+        # optional: add a wait state to allow for waiting at the current location
+        if len(state.path) < 5:  # avoid too many wait states
             new_state = State(
-                current_time + transfer_time,
-                new_location,
+                current_time + 0,  # + waiting time
+                state.location,
                 state.checked,
                 state.path.copy()
             )
@@ -581,24 +579,32 @@ def find_optimal_schedule(start_time, start_location, buses):
 
     return best
 
-# Test
-start_time = "11:00"
-best_solution = find_optimal_schedule(start_time, "Duisburg Hbf", buses)
-if best_solution:
-    print("Optimaler Plan:")
-    for step in best_solution.path:
-        print(f"Bus {step['bus']}: {step['from']} ({step['start']}) → {step['to']} ({step['end']})")
-    print(f"Gesamtdauer (bisher falsche berechnung!): {min_to_time(best_solution.current_time - time_to_min(start_time))}")
-else:
-    print("Keine Lösung gefunden.")
+if __name__ =="__main__":
+    start_time = "13:00"
+    best_solution = find_optimal_schedule(start_time, "Duisburg Hbf", buses)
+    if best_solution:
+        print("Best schedule:")
+        first = True
+        for step in best_solution.path:
+            print(f"Bus {step['bus']}: {step['from']} ({step['start']}) → {step['to']} ({step['end']})")
+            if first:
+                real_start_time = step['start']
+                first = False
+        print(f"Total time: {min_to_time(best_solution.current_time - time_to_min(real_start_time))}", "h")
+    else:
+        print("No solution found.")
 
-print("----------------------")
+    print("----------------------")
 
-best_solution = find_optimal_schedule(start_time, "Dinslaken", buses)
-if best_solution:
-    print("Optimaler Plan:")
-    for step in best_solution.path:
-        print(f"Bus {step['bus']}: {step['from']} ({step['start']}) → {step['to']} ({step['end']})")
-    print(f"Gesamtdauer (bisher falsche berechnung!): {min_to_time(best_solution.current_time - time_to_min(start_time))}")
-else:
-    print("Keine Lösung gefunden.")
+    best_solution = find_optimal_schedule(start_time, "Dinslaken", buses)
+    if best_solution:
+        print("Best schedule:")
+        first = True
+        for step in best_solution.path:
+            print(f"Bus {step['bus']}: {step['from']} ({step['start']}) → {step['to']} ({step['end']})")
+            if first:
+                real_start_time = step['start']
+                first = False
+        print(f"Total time: {min_to_time(best_solution.current_time - time_to_min(real_start_time))}", "h")
+    else:
+        print("No solution found.")
